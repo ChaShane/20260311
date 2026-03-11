@@ -6,9 +6,9 @@ const TUMBLE_DURATION_SEC = 2.5;
 const MIN_NUM = 1, MAX_NUM = 45, MAIN_COUNT = 6;
 const MAX_HISTORY = 10;
 
-// Supabase (추첨 시 lotto_draws 테이블에 저장)
+// Supabase (추첨 시 lotto_draws 테이블에 저장) — 브라우저에는 공개키만 사용. 비밀키는 서버/Edge Function에서만 사용.
 const SUPABASE_URL = 'https://flumjzqjojqdmsvbwklk.supabase.co';
-const SUPABASE_ANON_KEY = ''; // 또는 브라우저 콘솔에서 localStorage.setItem('supabase_anon_key','키값') 후 새로고침
+const SUPABASE_ANON_KEY = 'sb_publishable_5-M0nPZYkPtT0PTm10aRUw_acPozYki';
 let supabaseClient = null;
 (function () {
   var key = SUPABASE_ANON_KEY || (typeof localStorage !== 'undefined' && localStorage.getItem('supabase_anon_key'));
