@@ -6,6 +6,17 @@ const TUMBLE_DURATION_SEC = 2.5;
 const MIN_NUM = 1, MAX_NUM = 45, MAIN_COUNT = 6;
 const MAX_HISTORY = 10;
 
+// Supabase (추첨 시 lotto_draws 테이블에 저장)
+const SUPABASE_URL = 'https://flumjzqjojqdmsvbwklk.supabase.co';
+const SUPABASE_ANON_KEY = ''; // 또는 브라우저 콘솔에서 localStorage.setItem('supabase_anon_key','키값') 후 새로고침
+let supabaseClient = null;
+(function () {
+  var key = SUPABASE_ANON_KEY || (typeof localStorage !== 'undefined' && localStorage.getItem('supabase_anon_key'));
+  if (typeof supabase !== 'undefined' && key) {
+    supabaseClient = supabase.createClient(SUPABASE_URL, key);
+  }
+})();
+
 const BALL_COLORS = [
   new THREE.Color(0xf4d03f), // 1~10
   new THREE.Color(0x3498db), // 11~20
@@ -231,6 +242,13 @@ function addToHistory(numbers, bonus) {
   if (history.length > MAX_HISTORY) history.pop();
   try { localStorage.setItem('lottoHistory', JSON.stringify(history)); } catch (_) {}
   renderHistory();
+
+  // Supabase lotto_draws 테이블에 저장 (SQL 스키마: numbers integer[], bonus integer)
+  if (supabaseClient) {
+    supabaseClient.from('lotto_draws').insert({ numbers: numbers.slice(), bonus: bonus })
+      .then(function () { /* 저장 완료 */ })
+      .catch(function (err) { console.warn('Supabase 저장 실패:', err.message); });
+  }
 }
 
 function renderHistory() {
